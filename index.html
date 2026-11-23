@@ -19,7 +19,7 @@
             transition: background-color 1s ease;
         }
 
-        /* --- ПРЕЛОАДЕР --- */
+               /* --- ПРЕЛОАДЕР --- */
         #preloader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; display: flex; flex-direction: column;
@@ -29,34 +29,26 @@
         }
         #preloader.hidden { opacity: 0; visibility: hidden; }
 
+        /* ЗАМЕНЕННЫЙ БЛОК С ВАШЕЙ ФОТОГРАФИЕЙ */
         #preloader::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="fog" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="%23330000" stop-opacity="0.8"/><stop offset="60%" stop-color="%23110000" stop-opacity="0.6"/><stop offset="100%" stop-color="%23000000" stop-opacity="0.9"/></radialGradient></defs><rect width="100" height="100" fill="url(%23fog)"/><g opacity="0.6"><path d="M50,10 C55,10 58,13 58,18 C58,23 55,26 50,26 C45,26 42,23 42,18 C42,13 45,10 50,10 Z" fill="%23c0a0a0" opacity="0.3"/><path d="M45,24 L38,50 L42,70 L45,100 L55,100 L58,70 L62,50 L55,24 Z" fill="%23550000" opacity="0.4"/></g><circle cx="50" cy="45" r="30" fill="none" stroke="%23ff0000" stroke-width="0.5" opacity="0.2"/></svg>');
-            background-size: cover; background-position: center;
-            opacity: 0; animation: demonAppear 3s ease-in-out forwards; z-index: 0;
+            background-image: url('0fb881975dd58c8fa83872f146220ee9.jpg');
+            background-size: cover; 
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0; 
+            animation: demonAppear 3s ease-in-out forwards; 
+            z-index: 0;
+            /* Добавляем красноватый оттенок и виньетку для атмосферы */
+            filter: sepia(1) hue-rotate(-50deg) saturate(3) contrast(1.2) brightness(0.7);
+            box-shadow: inset 0 0 150px 50px #000;
         }
+        
         @keyframes demonAppear {
             0% { opacity: 0; transform: scale(1.1); }
             40% { opacity: 0.8; transform: scale(1); }
-            100% { opacity: 0.2; transform: scale(1.05); }
+            100% { opacity: 0.3; transform: scale(1.05); }
         }
-
-        .loader-text {
-            position: relative; z-index: 2; color: #8b0000; font-family: 'Creepster', cursive;
-            font-size: 2.5rem; letter-spacing: 5px; text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
-            animation: flicker 2s infinite;
-        }
-        .loader-sub {
-            position: relative; z-index: 2; color: #666; font-size: 1rem;
-            margin-top: 20px; letter-spacing: 3px; animation: pulse 1.5s infinite;
-        }
-        @keyframes flicker {
-            0%, 100% { opacity: 1; text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
-            25% { opacity: 0.5; text-shadow: none; }
-            50% { opacity: 0.8; text-shadow: 0 0 5px #ff0000; }
-            75% { opacity: 0.3; text-shadow: none; }
-        }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
 
         /* --- ИНТЕРФЕЙС --- */
         #darkCounter {
