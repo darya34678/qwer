@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заклятие 4: Последний обряд</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #0a0a0a;
+            color: #d4d4d4;
+            font-family: 'Special Elite', cursive;
+            overflow-x: hidden;
+            line-height: 1.6;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><radialGradient id="g"><stop offset="0%" stop-color="%23ff0000" stop-opacity="1"/><stop offset="60%" stop-color="%238b0000" stop-opacity="0.9"/><stop offset="100%" stop-color="%233a0000" stop-opacity="0"/></radialGradient></defs><circle cx="16" cy="16" r="10" fill="url(%23g)"/><circle cx="16" cy="16" r="4" fill="%23ff2222"/></svg>') 16 16, auto;
+            transition: background-color 1s ease;
+        }
+
+        /* --- ПРЕЛОАДЕР --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 9999; overflow: hidden;
+            transition: opacity 1.5s ease, visibility 1.5s ease;
+        }
+        #preloader.hidden { opacity: 0; visibility: hidden; }
+
+        #preloader::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="fog" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="%23330000" stop-opacity="0.8"/><stop offset="60%" stop-color="%23110000" stop-opacity="0.6"/><stop offset="100%" stop-color="%23000000" stop-opacity="0.9"/></radialGradient></defs><rect width="100" height="100" fill="url(%23fog)"/><g opacity="0.6"><path d="M50,10 C55,10 58,13 58,18 C58,23 55,26 50,26 C45,26 42,23 42,18 C42,13 45,10 50,10 Z" fill="%23c0a0a0" opacity="0.3"/><path d="M45,24 L38,50 L42,70 L45,100 L55,100 L58,70 L62,50 L55,24 Z" fill="%23550000" opacity="0.4"/></g><circle cx="50" cy="45" r="30" fill="none" stroke="%23ff0000" stroke-width="0.5" opacity="0.2"/></svg>');
+            background-size: cover; background-position: center;
+            opacity: 0; animation: demonAppear 3s ease-in-out forwards; z-index: 0;
+        }
+        @keyframes demonAppear {
+            0% { opacity: 0; transform: scale(1.1); }
+            40% { opacity: 0.8; transform: scale(1); }
+            100% { opacity: 0.2; transform: scale(1.05); }
+        }
+
+        .loader-text {
+            position: relative; z-index: 2; color: #8b0000; font-family: 'Creepster', cursive;
+            font-size: 2.5rem; letter-spacing: 5px; text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+            animation: flicker 2s infinite;
+        }
+        .loader-sub {
+            position: relative; z-index: 2; color: #666; font-size: 1rem;
+            margin-top: 20px; letter-spacing: 3px; animation: pulse 1.5s infinite;
+        }
+        @keyframes flicker {
+            0%, 100% { opacity: 1; text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000; }
+            25% { opacity: 0.5; text-shadow: none; }
+            50% { opacity: 0.8; text-shadow: 0 0 5px #ff0000; }
+            75% { opacity: 0.3; text-shadow: none; }
+        }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+
+        /* --- ИНТЕРФЕЙС --- */
+        #darkCounter {
+            position: fixed; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.8);
+            color: #8b0000; padding: 10px 20px; border: 1px solid #3a0000;
+            font-size: 0.9rem; letter-spacing: 2px; z-index: 9997;
+            text-shadow: 0 0 5px #ff0000; opacity: 0; transition: opacity 1s ease;
+        }
+        #darkCounter.visible { opacity: 1; }
+        #darkCounter span { color: #ff0000; font-weight: bold; }
+
+        #mainNav {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; z-index: 9996; background: rgba(0, 0, 0, 0.85);
+            padding: 10px; border: 1px solid #3a0000; border-radius: 8px;
+            opacity: 0; transition: opacity 1s ease; flex-wrap: wrap; justify-content: center;
+        }
+        #mainNav.visible { opacity: 1; }
+        .nav-btn {
+            background: transparent; color: #a0a0a0; border: 1px solid #3a0000;
+            padding: 10px 20px; font-family: 'Creepster', cursive; font-size: 1.1rem;
+            letter-spacing: 3px; transition: all 0.3s ease; border-radius: 4px;
+        }
+        .nav-btn:hover { color: #ff0000; border-color: #8b0000; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
+        .nav-btn.active { background: #8b0000; color: #fff; text-shadow: 0 0 10px #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.5); }
+
+        #main-content { opacity: 0; transition: opacity 2s ease; }
+        #main-content.visible { opacity: 1; }
+        .tab-content { display: none; animation: tabFadeIn 0.6s ease; }
+        .tab-content.active { display: block; }
+        @keyframes tabFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- СЮЖЕТ --- */
+        .hero {
+            position: relative; height: 100vh; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            background: radial-gradient(circle at 50% 50%, #1a0000 0%, #000000 80%);
+            overflow: hidden; border-bottom: 2px solid #3a0000;
+        }
+        .hero::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(45deg, #111, #2a0000, #111);
+            background-size: 400% 400%; opacity: 0.5;
+            animation: bgShift 15s infinite alternate;
+        }
+        @keyframes bgShift { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+        .hero h1 {
+            font-family: 'Creepster', cursive; font-size: 6rem; color: #8b0000;
+            text-shadow: 0 0 20px #ff0000, 0 0 40px #4a0000, 5px 5px 0 #000;
+            position: relative; z-index: 2; letter-spacing: 8px;
+            animation: titleGlitch 4s infinite; padding: 0 20px;
+        }
+        @keyframes titleGlitch {
+            0%, 100% { transform: translate(0); }
+            92% { transform: translate(0); }
+            93% { transform: translate(-5px, 2px); text-shadow: 0 0 20px #ff0000, -5px -5px 0 #00ffff; }
+            94% { transform: translate(5px, -2px); text-shadow: 0 0 20px #ff0000, 5px 5px 0 #ff00ff; }
+            95% { transform: translate(0); }
+        }
+        .hero p { font-size: 1.5rem; color: #a0a0a0; margin-top: 20px; z-index: 2; text-shadow: 2px 2px 4px #000; letter-spacing: 2px; }
+        .scroll-hint { position: absolute; bottom: 40px; color: #8b0000; font-size: 1rem; letter-spacing: 4px; animation: bounce 2s infinite; z-index: 2; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); opacity: 0.5; } 50% { transform: translateY(-15px); opacity: 1; } }
+
+        .story-section { padding: 100px 20px; max-width: 900px; margin: 0 auto; position: relative; }
+        .story-section h2 { font-family: 'Creepster', cursive; font-size: 3.5rem; color: #8b0000; text-align: center; margin-bottom: 60px; text-shadow: 0 0 15px #ff0000; letter-spacing: 4px; }
+        .story-text { font-size: 1.2rem; color: #b0b0b0; margin-bottom: 40px; text-align: justify; position: relative; padding-left: 20px; border-left: 2px solid #3a0000; transition: opacity 0.3s ease; }
+        .story-text::first-letter { font-family: 'Creepster', cursive; font-size: 4rem; color: #ff0000; float: left; margin-right: 15px; line-height: 1; }
+        .story-text strong { color: #ff4444; font-weight: bold; text-shadow: 0 0 5px #ff0000; }
+
+        /* --- ГАЛЕРЕЯ --- */
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; padding: 60px 20px; max-width: 1200px; margin: 0 auto; }
+        .gallery-item { position: relative; overflow: hidden; border: 3px solid #2a0000; box-shadow: 0 0 20px #000, inset 0 0 50px #000; transition: transform 0.5s ease, box-shadow 0.5s ease; aspect-ratio: 3/4; background: #111; display: flex; align-items: center; justify-content: center;}
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(80%) sepia(20%) contrast(120%) brightness(0.6); transition: filter 0.5s ease, transform 0.5s ease; }
+        .gallery-item:hover { transform: scale(1.02); box-shadow: 0 0 40px #ff0000, inset 0 0 80px #000; z-index: 10; }
+        .gallery-item:hover img { filter: grayscale(30%) sepia(40%) contrast(140%) brightness(0.8); transform: scale(1.05); }
+        .gallery-item::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(transparent 60%, rgba(0,0,0,0.9)); pointer-events: none; }
+        .gallery-caption { position: absolute; bottom: 20px; left: 20px; right: 20px; color: #ccc; font-size: 1rem; text-align: center; z-index: 2; text-shadow: 1px 1px 3px #000; font-family: 'Special Elite', cursive; }
+
+        .whisper-popup { position: fixed; background: rgba(0, 0, 0, 0.95); color: #ff0000; padding: 15px 25px; border: 1px solid #8b0000; font-family: 'Creepster', cursive; font-size: 1.2rem; letter-spacing: 2px; text-shadow: 0 0 10px #ff0000; z-index: 10000; pointer-events: none; animation: whisperFade 3s ease forwards; }
+        @keyframes whisperFade { 0% { opacity: 0; transform: translateY(10px) scale(0.9); } 20% { opacity: 1; transform: translateY(0) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-20px); } }
+
+        /* --- ГЕРОИ --- */
+        .heroes-section { padding: 120px 20px 80px; max-width: 1200px; margin: 0 auto; text-align: center; }
+        .heroes-section h2 { font-family: 'Creepster', cursive; font-size: 4rem; color: #8b0000; text-shadow: 0 0 30px #ff0000; letter-spacing: 6px; margin-bottom: 20px; }
+        .heroes-intro { color: #888; font-size: 1.1rem; max-width: 700px; margin: 0 auto 60px; letter-spacing: 1px; }
+        .heroes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        
+        .hero-card { background: linear-gradient(160deg, #1a0a00 0%, #0a0a0a 100%); border: 2px solid #3a0000; border-radius: 12px; overflow: hidden; transition: all 0.4s ease; position: relative; text-align: left; }
+        .hero-card:hover { border-color: #8b0000; box-shadow: 0 0 40px rgba(255, 0, 0, 0.4); transform: translateY(-5px); }
+        .hero-img-wrap { position: relative; height: 380px; overflow: hidden; background: #150000; }
+        .hero-img-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: top; filter: grayscale(70%) sepia(30%) brightness(0.6) contrast(120%); transition: all 0.5s ease; }
+        .hero-card:hover .hero-img-wrap img { filter: grayscale(20%) sepia(40%) brightness(0.8) contrast(130%); transform: scale(1.05); }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(transparent 40%, #0a0a0a 100%); pointer-events: none; }
+        .demon-overlay { background: linear-gradient(transparent 20%, rgba(139, 0, 0, 0.5) 100%); }
+        .hero-card h3 { font-family: 'Creepster', cursive; font-size: 1.8rem; color: #ff0000; padding: 20px 20px 5px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255,0,0,0.5); }
+        .hero-role { color: #666; font-size: 0.9rem; padding: 0 20px 15px; letter-spacing: 2px; text-transform: uppercase; }
+        .hero-details { max-height: 0; overflow: hidden; transition: max-height 0.6s ease, padding 0.6s ease; padding: 0 20px; border-top: 1px solid transparent; }
+        .hero-card.expanded .hero-details { max-height: 400px; padding: 20px; border-top-color: #3a0000; }
+        .hero-details p { color: #b0b0b0; font-size: 1rem; margin-bottom: 15px; line-height: 1.6; }
+        .hero-quote { display: block; color: #ff4444; font-style: italic; font-size: 0.95rem; padding-left: 15px; border-left: 2px solid #8b0000; text-shadow: 0 0 5px rgba(255,0,0,0.3); }
+
+        /* --- ОБРЯД --- */
+        .ritual-game { padding: 120px 20px 100px; text-align: center; background: linear-gradient(180deg, #0a0a0a 0%, #1a0000 50%, #0a0a0a 100%); min-height: 100vh; }
+        .ritual-game h2 { font-family: 'Creepster', cursive; font-size: 3.5rem; color: #ff0000; text-shadow: 0 0 30px #ff0000; margin-bottom: 20px; letter-spacing: 4px; }
+        .ritual-instruction { color: #a0a0a0; font-size: 1.1rem; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .ritual-instruction strong { color: #ff4444; }
+        .candles-container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin: 40px 0; }
+        .candle { width: 60px; height: 150px; background: linear-gradient(180deg, #f5f5dc 0%, #d4c89f 50%, #b8a97a 100%); border-radius: 8px 8px 4px 4px; position: relative; transition: all 0.3s ease; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .candle span { color: #333; font-family: 'Creepster', cursive; font-size: 1.5rem; z-index: 2; }
+        .candle .flame { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 15px; height: 25px; background: radial-gradient(circle at 50% 80%, #ffff00 0%, #ff8800 50%, #ff0000 100%); border-radius: 50% 50% 20% 20%; animation: flameFlicker 0.3s infinite alternate; box-shadow: 0 0 20px #ff8800, 0 0 40px #ff4400; transition: all 0.3s ease; }
+        @keyframes flameFlicker { 0% { transform: translateX(-50%) scale(1) rotate(-2deg); } 100% { transform: translateX(-50%) scale(1.1) rotate(2deg); } }
+        .candle.clicked { background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 50%, #0a0a0a 100%); transform: translateY(5px); }
+        .candle.clicked .flame { opacity: 0; }
+        .candle:hover:not(.clicked) { transform: translateY(-5px); box-shadow: 0 0 30px #ff8800; }
+        .ritual-timer { font-size: 1.5rem; color: #ff4444; margin: 30px 0; letter-spacing: 2px; }
+        .ritual-timer span { color: #ff0000; font-size: 2rem; font-weight: bold; text-shadow: 0 0 15px #ff0000; }
+        .ritual-status { font-family: 'Creepster', cursive; font-size: 2rem; color: #ff0000; min-height: 60px; margin: 20px 0; text-shadow: 0 0 20px #ff0000; letter-spacing: 3px; }
+
+        /* --- КНОПКИ --- */
+        .ritual-btn { display: inline-block; padding: 18px 50px; background: transparent; color: #ff0000; border: 2px solid #8b0000; font-family: 'Creepster', cursive; font-size: 1.8rem; letter-spacing: 4px; transition: all 0.5s ease; text-shadow: 0 0 10px #ff0000; position: relative; overflow: hidden; animation: borderFlicker 2s infinite; cursor: pointer; }
+        @keyframes borderFlicker { 0%, 100% { border-color: #8b0000; box-shadow: 0 0 10px #8b0000; } 50% { border-color: #ff0000; box-shadow: 0 0 30px #ff0000; } }
+        .ritual-btn:hover { background: #ff0000; color: #000; box-shadow: 0 0 80px #ff0000; text-shadow: none; transform: scale(1.05); }
+        .ritual-btn:active { transform: scale(0.95); }
+        .ritual-btn:disabled { opacity: 0.3; cursor: not-allowed; animation: none; }
+
+        /* --- УИДЖА --- */
+        .ouija-section { padding: 120px 20px 100px; text-align: center; background: radial-gradient(circle at center, #1a0a00 0%, #000 100%); min-height: 100vh; }
+        .ouija-section h2 { font-family: 'Creepster', cursive; font-size: 3.5rem; color: #ff0000; text-shadow: 0 0 30px #ff0000; margin-bottom: 20px; letter-spacing: 4px; }
+        .ouija-instruction { color: #a0a0a0; font-size: 1.1rem; margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .ouija-board { max-width: 700px; margin: 0 auto 30px auto; background: #2a1a00; border: 3px solid #8b0000; border-radius: 20px; padding: 30px; box-shadow: 0 0 40px rgba(255, 0, 0, 0.3), inset 0 0 60px rgba(0,0,0,0.8); position: relative; }
+        .ouija-letters { display: grid; grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); gap: 8px; margin-bottom: 30px; }
+        .ouija-letters span { color: #d4c89f; font-family: 'Special Elite', cursive; font-size: 1.2rem; padding: 8px; border: 1px solid #3a2a00; border-radius: 4px; transition: all 0.3s ease; background: rgba(0,0,0,0.3); }
+        .ouija-letters span.active { background: #ff0000; color: #000; box-shadow: 0 0 20px #ff0000; transform: scale(1.2); }
+        .ouija-answer { min-height: 80px; display: flex; align-items: center; justify-content: center; font-family: 'Creepster', cursive; font-size: 2rem; color: #ff0000; text-shadow: 0 0 15px #ff0000; letter-spacing: 3px; border-top: 1px solid #3a0000; padding-top: 20px; transition: all 0.5s ease; }
+        .ouija-input { width: 80%; max-width: 500px; padding: 15px 20px; background: rgba(0,0,0,0.8); border: 2px solid #3a0000; color: #d4d4d4; font-family: 'Special Elite', cursive; font-size: 1rem; margin-bottom: 20px; outline: none; transition: border-color 0.3s ease; }
+        .ouija-input:focus { border-color: #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.3); }
+
+        /* --- ФРАНШИЗА --- */
+        .franchise-section { padding: 120px 20px 100px; max-width: 1300px; margin: 0 auto; min-height: 100vh; }
+        .franchise-section h2 { font-family: 'Creepster', cursive; font-size: 4rem; color: #8b0000; text-align: center; text-shadow: 0 0 30px #ff0000; letter-spacing: 6px; margin-bottom: 20px; }
+        .franchise-intro { text-align: center; color: #888; font-size: 1.1rem; max-width: 800px; margin: 0 auto 60px; letter-spacing: 1px; }
+        
+        .franchise-timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px; }
+        
+        .franchise-card { background: linear-gradient(160deg, #1a0a00 0%, #0a0a0a 100%); border: 2px solid #3a0000; border-radius: 12px; overflow: hidden; transition: all 0.4s ease; position: relative; text-align: left; display: flex; flex-direction: column; cursor: pointer; }
+        .franchise-card:hover { border-color: #8b0000; box-shadow: 0 0 40px rgba(255, 0, 0, 0.4); transform: translateY(-5px); }
+        .franchise-card.franchise-current { border-color: #ff0000; box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); animation: currentFilmPulse 2s infinite; }
+        @keyframes currentFilmPulse { 0%, 100% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); } 50% { box-shadow: 0 0 60px rgba(255, 0, 0, 0.9); } }
+        
+        .film-year { position: absolute; top: 15px; left: 15px; background: rgba(0, 0, 0, 0.9); color: #ff0000; font-family: 'Creepster', cursive; font-size: 1.5rem; padding: 5px 15px; border: 1px solid #8b0000; border-radius: 4px; z-index: 3; text-shadow: 0 0 10px #ff0000; letter-spacing: 2px; }
+        
+        .film-poster { position: relative; height: 380px; overflow: hidden; background: #150000; }
+        .film-poster img { width: 100%; height: 100%; object-fit: cover; object-position: top; filter: grayscale(70%) sepia(30%) brightness(0.6) contrast(120%); transition: all 0.5s ease; }
+        .franchise-card:hover .film-poster img { filter: grayscale(20%) sepia(40%) brightness(0.8) contrast(130%); transform: scale(1.05); }
+        
+        .film-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(transparent 40%, #0a0a0a 100%); pointer-events: none; }
+        .franchise-card h3 { font-family: 'Creepster', cursive; font-size: 1.6rem; color: #ff0000; padding: 20px 20px 5px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255,0,0,0.5); }
+        .film-tagline { color: #666; font-size: 0.9rem; padding: 0 20px 15px; letter-spacing: 2px; text-transform: uppercase; }
+        
+        .film-details { max-height: 0; overflow: hidden; transition: max-height 0.6s ease, padding 0.6s ease; padding: 0 20px; border-top: 1px solid transparent; background: rgba(0,0,0,0.5); }
+        .franchise-card.expanded .film-details { max-height: 300px; padding: 20px; border-top-color: #3a0000; }
+        .film-details p { color: #b0b0b0; font-size: 0.95rem; margin-bottom: 10px; line-height: 1.6; }
+        .film-details strong { color: #ff4444; }
+        
+        .franchise-legend { display: flex; justify-content: center; gap: 40px; margin-top: 60px; flex-wrap: wrap; padding: 30px; border-top: 1px solid #3a0000; }
+        .franchise-legend p { color: #888; font-size: 0.9rem; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+        .legend-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #3a0000; border: 1px solid #8b0000; }
+        .legend-dot.current { background: #ff0000; box-shadow: 0 0 15px #ff0000; animation: currentFilmPulse 2s infinite; }
+
+        footer { background: #000; text-align: center; padding: 30px; border-top: 1px solid #1a0000; color: #333; font-size: 0.9rem; letter-spacing: 2px; }
+        .noise-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9998; opacity: 0.05; background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)"/></svg>'); background-size: 200px 200px; animation: noiseAnim 0.5s infinite; }
+        @keyframes noiseAnim { 0% { transform: translate(0, 0); } 10% { transform: translate(-5%, -5%); } 20% { transform: translate(5%, 5%); } 30% { transform: translate(-5%, 5%); } 40% { transform: translate(5%, -5%); } 50% { transform: translate(-5%, -5%); } 60% { transform: translate(5%, 5%); } 70% { transform: translate(-5%, 5%); } 80% { transform: translate(5%, -5%); } 90% { transform: translate(-5%, -5%); } 100% { transform: translate(0, 0); } }
+
+        /* --- КУРСОРЫ --- */
+        button, .nav-btn, .ritual-btn { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><path d="M28,4 L30,6 L12,24 L10,24 L8,26 L6,24 L8,22 L10,22 L28,4 Z" fill="%23e0e0e0" stroke="%23333" stroke-width="0.5"/><path d="M10,24 L12,26 L8,30 L6,28 Z" fill="%233a1a1a" stroke="%23000" stroke-width="0.5"/><circle cx="28" cy="6" r="2" fill="%238b0000" opacity="0.9"/></svg>') 28 4, pointer; }
+        .gallery-item, .film-poster, .hero-img-wrap { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="18" cy="18" r="14" fill="none" stroke="%23ff0000" stroke-width="3" opacity="0.9"/><circle cx="18" cy="18" r="10" fill="rgba(139,0,0,0.4)"/><path d="M18,12 Q22,12 22,16 Q22,20 18,20 Q14,20 14,16 Q14,12 18,12 Z" fill="%23ff0000" opacity="0.7"/><line x1="28" y1="28" x2="36" y2="36" stroke="%23ff0000" stroke-width="4" stroke-linecap="round"/></svg>') 18 18, pointer; }
+        .hero-card, .franchise-card { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><path d="M4,18 Q18,4 32,18 Q18,32 4,18 Z" fill="%23f0f0f0" stroke="%23333" stroke-width="1"/><circle cx="18" cy="18" r="7" fill="%238b0000"/><circle cx="18" cy="18" r="4" fill="%23ff0000"/><circle cx="18" cy="18" r="2" fill="%23000"/></svg>') 18 18, pointer; }
+        .candle { cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16,4 Q22,12 20,18 Q18,22 16,22 Q14,22 12,18 Q10,12 16,4 Z" fill="%23ff8800" stroke="%23ff4400" stroke-width="0.5"/><ellipse cx="16" cy="18" rx="4" ry="2" fill="%23ffff00" opacity="0.8"/></svg>') 16 16, pointer; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; letter-spacing: 4px; }
+            .story-section h2, .ritual-game h2, .ouija-section h2, .heroes-section h2 { font-size: 2.5rem; }
+            .ritual-btn { font-size: 1.2rem; padding: 14px 30px; }
+            #mainNav { top: 10px; gap: 5px; padding: 8px; }
+            .nav-btn { padding: 8px 12px; font-size: 0.9rem; letter-spacing: 2px; }
+            .heroes-grid, .franchise-timeline { grid-template-columns: 1fr; }
+            .candle { width: 45px; height: 120px; }
+            .franchise-section h2 { font-size: 2.5rem; }
+            .franchise-legend { flex-direction: column; gap: 15px; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="loader-text">ЗАКЛЯТИЕ 4</div>
+        <div class="loader-sub">ПОСЛЕДНИЙ ОБРЯД</div>
+    </div>
+
+    <div class="noise-overlay"></div>
+    <div id="darkCounter">ТЬМА: <span id="darkCount">0</span></div>
+
+    <nav id="mainNav">
+        <button class="nav-btn active" data-tab="story">СЮЖЕТ</button>
+        <button class="nav-btn" data-tab="heroes">ГЕРОИ</button>
+        <button class="nav-btn" data-tab="ritual">ОБРЯД</button>
+        <button class="nav-btn" data-tab="ouija">УИДЖА</button>
+        <button class="nav-btn" data-tab="franchise">ФРАНШИЗА</button>
+    </nav>
+
+    <div id="main-content">
+
+        <div class="tab-content active" id="tab-story">
+            <section class="hero">
+                <h1>ЗАКЛЯТИЕ 4</h1>
+                <p>ПОСЛЕДНИЙ ОБРЯД</p>
+                <div class="scroll-hint">▼ ПРОКРУТИ ВНИЗ ▼</div>
+            </section>
+
+            <section class="story-section">
+                <h2>СЮЖЕТ</h2>
+                <p class="story-text"><strong>1986 год.</strong> Семья Тёрнеров переезжает в старый викторианский особняк в глуши Новой Англии, надеясь начать новую жизнь после трагедии. Но дом хранит страшную тайну: его стены помнят <strong>последний обряд</strong>, проведённый здесь десятилетия назад.</p>
+                <p class="story-text">Эдна Тёрнер, мать семейства, начинает замечать странные вещи: по ночам из подвала доносится шёпот, зеркала искажают отражения, а младшая дочь, Лили, находит в саду <strong>старинную куклу</strong> с выцарапанным на фарфоровом лице словом «помоги». Когда в доме начинают сами собой открываться двери, а на стенах проступают кровавые символы, Эдна понимает — это не просто полтергейст. Это <strong>демоническая сущность</strong>, связанная с ритуалом, который так и не был завершён.</p>
+                <p class="story-text">Эдна обращается к <strong>Лоррейн и Эду Уорренам</strong> — известным исследователям паранормальных явлений. Вместе они выясняют, что в 1932 году в этом доме группа оккультистов пыталась провести обряд изгнания, но что-то пошло не так. <strong>Демон по имени Валлак</strong> был призван, но не изгнан. И теперь, спустя полвека, он хочет завершить начатое — забрать душу последнего ребёнка, родившегося в этом доме.</p>
+                <p class="story-text"><strong>Лили — ключ ко всему.</strong> Её кровь — последняя жертва, необходимая для завершения обряда. Уоррены должны успеть провести <strong>контр-ритуал</strong> до полуночи, когда силы зла достигнут пика. Но смогут ли они противостоять древнему демону, если сам дом стал его союзником? И что, если <strong>последний обряд</strong> уже начался...</p>
+            </section>
+
+            <section class="gallery">
+                <div class="gallery-item" data-whisper="Оно смотрит на тебя...">
+                    <img src="i.webp" alt="Особняк Тёрнеров">
+                    <div class="gallery-caption">Особняк Тёрнеров. Здесь всё началось.</div>
+                </div>
+                <div class="gallery-item" data-whisper="Не ходи туда...">
+                    <img src="w..webp" alt="Лес за домом">
+                    <div class="gallery-caption">Лес за домом. Там находят странные символы.</div>
+                </div>
+                <div class="gallery-item" data-whisper="Она хочет играть...">
+                    <img src="o.webp" alt="Кукла Лили">
+                    <div class="gallery-caption">Кукла Лили. Она шепчет по ночам.</div>
+                </div>
+                <div class="gallery-item" data-whisper="Ритуал уже начался...">
+                    <img src="d15efef294e2b6db68df4af0469cbe97.jpg" alt="Свечи">
+                    <div class="gallery-caption">Свечи, которые не гаснут. Ритуал продолжается.</div>
+                </div>
+                <div class="gallery-item" data-whisper="Ты видишь его за спиной?">
+                    <img src="2026-11-23_11-11.png" alt="Зеркало в подвале">
+                    <div class="gallery-caption">Зеркало в подвале. Оно показывает не тебя.</div>
+                </div>
+            </section>
+        </div>
+
+        <div class="tab-content" id="tab-heroes">
+            <section class="heroes-section">
+                <h2>ГЕРОИ ФИЛЬМА</h2>
+                <p class="heroes-intro">Нажми на карточку, чтобы узнать больше о персонаже. Но помни: некоторые из них не те, кем кажутся.</p>
+                <div class="heroes-grid">
+                    
+                    <!-- Эдна -->
+                    <div class="hero-card" data-hero="edna">
+                        <div class="hero-img-wrap">
+                            <img src="2026-11-19_11-05.png" alt="Эдна" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\'><rect width=\'400\' height=\'400\' fill=\'%23111\'/><text x=\'200\' y=\'200\' fill=\'%238b0000\' font-family=\'serif\' font-size=\'24\' text-anchor=\'middle\'>ЭДНА</text></svg>'">
+                            <div class="hero-overlay"></div>
+                        </div>
+                        <h3>Эдна Тёрнер</h3>
+                        <p class="hero-role">Мать семейства</p>
+                        <div class="hero-details"><p>Переехала в особняк с мужем и дочерью. Первой замечает странности в доме.</p><span class="hero-quote">«Я не позволю ему забрать мою дочь.»</span></div>
+                    </div>
+                    
+                    <!-- Лили -->
+                    <div class="hero-card" data-hero="lily">
+                        <div class="hero-img-wrap">
+                            <img src="2026-11-19_11-05_1.png" alt="Лили" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\'><rect width=\'400\' height=\'400\' fill=\'%23111\'/><text x=\'200\' y=\'200\' fill=\'%238b0000\' font-family=\'serif\' font-size=\'24\' text-anchor=\'middle\'>ЛИЛИ</text></svg>'">
+                            <div class="hero-overlay"></div>
+                        </div>
+                        <h3>Лили Тёрнер</h3>
+                        <p class="hero-role">Младшая дочь</p>
+                        <div class="hero-details"><p>Находит куклу в саду и начинает с ней разговаривать. Её кровь — ключ к завершению обряда.</p><span class="hero-quote">«Мама, кукла говорит, что хочет остаться.»</span></div>
+                    </div>
+
+                    <!-- Лоррейн -->
+                    <div class="hero-card" data-hero="lorraine">
+                        <div class="hero-img-wrap">
+                            <img src="2026-11-19_11-01.png" alt="Лоррейн" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\'><rect width=\'400\' height=\'400\' fill=\'%23111\'/><text x=\'200\' y=\'200\' fill=\'%238b0000\' font-family=\'serif\' font-size=\'24\' text-anchor=\'middle\'>ЛОРРЕЙН</text></svg>'">
+                            <div class="hero-overlay"></div>
+                        </div>
+                        <h3>Лоррейн Уоррен</h3>
+                        <p class="hero-role">Медиум</p>
+                        <div class="hero-details"><p>Обладает даром ясновидения. Её вера и опыт — главное оружие против Валлака.</p><span class="hero-quote">«Я вижу его. Он стоит за твоей спиной.»</span></div>
+                    </div>
+
+                    <!-- Эд -->
+                    <div class="hero-card" data-hero="ed">
+                        <div class="hero-img-wrap">
+                            <img src="2026-11-19_11-02.png" alt="Эд" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\'><rect width=\'400\' height=\'400\' fill=\'%23111\'/><text x=\'200\' y=\'200\' fill=\'%238b0000\' font-family=\'serif\' font-size=\'24\' text-anchor=\'middle\'>ЭД</text></svg>'">
+                            <div class="hero-overlay"></div>
+                        </div>
+                        <h3>Эд Уоррен</h3>
+                        <p class="hero-role">Демонолог</p>
+                        <div class="hero-details"><p>Скептик, но преданный напарник. Изучает демонические ритуалы.</p><span class="hero-quote">«Есть ли способ остановить то, что уже началось?»</span></div>
+                    </div>
+
+                    <!-- Валлак -->
+                    <div class="hero-card hero-demon" data-hero="valak">
+                        <div class="hero-img-wrap">
+                            <img src="2026-11-19_11-03.png" alt="Валлак" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\'><rect width=\'400\' height=\'400\' fill=\'%23200\'/><text x=\'200\' y=\'200\' fill=\'%23ff0000\' font-family=\'serif\' font-size=\'24\' text-anchor=\'middle\'>ВАЛЛАК</text></svg>'">
+                            <div class="hero-overlay demon-overlay"></div>
+                        </div>
+                        <h3>Валлак</h3>
+                        <p class="hero-role">Демон-монах</p>
+                        <div class="hero-details"><p>Древняя сущность, призванная в 1932 году. Проявляется в облике монахини.</p><span class="hero-quote">«Я — Валлак. И я пришёл за тобой.»</span></div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+
+        <div class="tab-content" id="tab-ritual">
+            <section class="ritual-game">
+                <h2>ОБРЯД ИЗГНАНИЯ</h2>
+                <p class="ritual-instruction">Нажми на все 5 свечей <strong>по порядку</strong>, чтобы изгнать Валлака.</p>
+                <div class="candles-container">
+                    <div class="candle" data-order="1"><div class="flame"></div><span>1</span></div>
+                    <div class="candle" data-order="2"><div class="flame"></div><span>2</span></div>
+                    <div class="candle" data-order="3"><div class="flame"></div><span>3</span></div>
+                    <div class="candle" data-order="4"><div class="flame"></div><span>4</span></div>
+                    <div class="candle" data-order="5"><div class="flame"></div><span>5</span></div>
+                </div>
+                <div class="ritual-timer">До полуночи: <span id="timer">30</span> сек.</div>
+                <div class="ritual-status" id="ritualStatus"></div>
+                <button class="ritual-btn" id="startRitualBtn">НАЧАТЬ ОБРЯД</button>
+            </section>
+        </div>
+
+        <div class="tab-content" id="tab-ouija">
+            <section class="ouija-section">
+                <h2>ВЫЗОВИ ДУХ</h2>
+                <p class="ouija-instruction">Напиши вопрос духам и нажми «Спросить».</p>
+                <div class="ouija-board">
+                    <div class="ouija-letters" id="ouijaLetters">
+                        <span>А</span><span>Б</span><span>В</span><span>Г</span><span>Д</span><span>Е</span><span>Ж</span><span>З</span><span>И</span><span>Й</span><span>К</span><span>Л</span><span>М</span><span>Н</span><span>О</span><span>П</span><span>Р</span><span>С</span><span>Т</span><span>У</span><span>Ф</span><span>Х</span><span>Ц</span><span>Ч</span><span>Ш</span><span>Щ</span><span>Ъ</span><span>Ы</span><span>Ь</span><span>Э</span><span>Ю</span><span>Я</span>
+                    </div>
+                    <div class="ouija-answer" id="ouijaAnswer">...</div>
+                </div>
+                <input type="text" id="ouijaQuestion" class="ouija-input" placeholder="Задай вопрос духам...">
+                <button class="ritual-btn ouija-btn" id="ouijaBtn">СПРОСИТЬ</button>
+            </section>
+        </div>
+
+        <div class="tab-content" id="tab-franchise">
+            <section class="franchise-section">
+                <h2>ФРАНШИЗА «ЗАКЛЯТИЕ»</h2>
+                <p class="franchise-intro">Все части вселенной «Заклятия». Нажми на карточку, чтобы узнать подробности.</p>
+                
+                <div class="franchise-timeline">
+                    <!-- Фильм 1 -->
+                    <div class="franchise-card" data-film="conjuring1">
+                        <div class="film-year">2013</div>
+                        <div class="film-poster">
+                            <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/5/5a/The_Conjuring_poster.jpg/400px-The_Conjuring_poster.jpg" alt="Заклятие" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'600\'><rect width=\'400\' height=\'600\' fill=\'%23111\'/><text x=\'200\' y=\'300\' fill=\'%238b0000\' font-family=\'serif\' font-size=\'36\' text-anchor=\'middle\'>ЗАКЛЯТИЕ 1</text></svg>'">
+                            <div class="film-overlay"></div>
+                        </div>
+                        <h3>Заклятие</h3>
+                        <p class="film-tagline">Первое дело Уорренов</p>
+                        <div class="film-details"><p><strong>Режиссёр:</strong> Джеймс Ван</p><p><strong>Сюжет:</strong> Уоррены расследуют дело семьи Перрон. Дом захвачен демонической сущностью Батори.</p></div>
+                    </div>
+                    <!-- Фильм 2 -->
+                    <div class="franchise-card" data-film="conjuring2">
+                        <div class="film-year">2016</div>
+                        <div class="film-poster">
+                            <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/e/e2/The_Conjuring_2_poster.jpg/400px-The_Conjuring_2_poster.jpg" alt="Заклятие 2" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'600\'><rect width=\'400\' height=\'600\' fill=\'%23111\'/><text x=\'200\' y=\'300\' fill=\'%238b0000\' font-family=\'serif\' font-size=\'36\' text-anchor=\'middle\'>ЗАКЛЯТИЕ 2</text></svg>'">
+                            <div class="film-overlay"></div>
+                        </div>
+                        <h3>Заклятие 2</h3>
+                        <p class="film-tagline">Энфилдский полтергейст</p>
+                        <div class="film-details"><p><strong>Режиссёр:</strong> Джеймс Ван</p><p><strong>Сюжет:</strong> Уоррены отправляются в Лондон. За полтергейстом скрывается сам демон Валлак.</p></div>
+                    </div>
+                    <!-- Фильм 3 -->
+                    <div class="franchise-card" data-film="conjuring3">
+                        <div class="film-year">2021</div>
+                        <div class="film-poster">
+                            <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/d/d1/The_Conjuring_3_poster.jpg/400px-The_Conjuring_3_poster.jpg" alt="Заклятие 3" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'600\'><rect width=\'400\' height=\'600\' fill=\'%23111\'/><text x=\'200\' y=\'300\' fill=\'%238b0000\' font-family=\'serif\' font-size=\'36\' text-anchor=\'middle\'>ЗАКЛЯТИЕ 3</text></svg>'">
+                            <div class="film-overlay"></div>
+                        </div>
+                        <h3>Заклятие 3: По воле дьявола</h3>
+                        <p class="film-tagline">Дело Арне Джонсона</p>
+                        <div class="film-details"><p><strong>Режиссёр:</strong> Майкл Чавес</p><p><strong>Сюжет:</strong> Уоррены расследуют убийство, совершённое одержимым юношей. Дело приводит их к демону, жаждущему мести.</p></div>
+                    </div>
+                    <!-- Фильм 4 -->
+                    <div class="franchise-card franchise-current" data-film="conjuring4">
+                        <div class="film-year">2025</div>
+                        <div class="film-poster">
+                            <img src="https://upload.wikimedia.org/wikipedia/ru/thumb/7/7b/The_Conjuring_4_Last_Rites.jpg/400px-The_Conjuring_4_Last_Rites.jpg" alt="Заклятие 4" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'600\'><rect width=\'400\' height=\'600\' fill=\'%23200\'/><text x=\'200\' y=\'300\' fill=\'%23ff0000\' font-family=\'serif\' font-size=\'36\' text-anchor=\'middle\'>ЗАКЛЯТИЕ 4</text></svg>'">
+                            <div class="film-overlay"></div>
+                        </div>
+                        <h3>Заклятие 4: Последний обряд</h3>
+                        <p class="film-tagline">Всё началось здесь</p>
+                        <div class="film-details"><p><strong>Режиссёр:</strong> Майкл Чавес</p><p><strong>Сюжет:</strong> Уоррены возвращаются в Новую Англию, чтобы противостоять демону Валлаку в последний раз.</p></div>
+                    </div>
+                </div>
+
+                <div class="franchise-legend">
+                    <p><span class="legend-dot current"></span> Текущий фильм — «Заклятие 4»</p>
+                    <p><span class="legend-dot"></span> Другие части франшизы</p>
+                </div>
+            </section>
+        </div>
+
+        <footer>
+            <p>© 2025 ЗАКЛЯТИЕ 4: ПОСЛЕДНИЙ ОБРЯД | Фан-сайт.</p>
+        </footer>
+    </div>
+
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const preloader = document.getElementById('preloader');
+                if(preloader) preloader.classList.add('hidden');
+                
+                const mainContent = document.getElementById('main-content');
+                if(mainContent) mainContent.classList.add('visible');
+                
+                const mainNav = document.getElementById('mainNav');
+                if(mainNav) mainNav.classList.add('visible');
+                
+                const darkCounter = document.getElementById('darkCounter');
+                if(darkCounter) darkCounter.classList.add('visible');
+            }, 3500);
+
+            let darkCount = 0;
+            const darkCountEl = document.getElementById('darkCount');
+            window.increaseDarkness = (amount = 1) => {
+                darkCount = Math.max(0, darkCount + amount);
+                if(darkCountEl) darkCountEl.textContent = darkCount;
+                const darkness = Math.min(darkCount * 0.03, 0.6);
+                document.body.style.backgroundColor = `rgba(10, 0, 0, ${1 - darkness})`;
+            };
+
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const tabs = document.querySelectorAll('.tab-content');
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    tabs.forEach(t => t.classList.remove('active'));
+                    const targetTab = document.getElementById('tab-' + btn.dataset.tab);
+                    if(targetTab) targetTab.classList.add('active');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    increaseDarkness(0.5);
+                });
+            });
+
+            const firstStory = document.querySelector('.story-text');
+            if (firstStory) {
+                const original = firstStory.innerHTML;
+                firstStory.innerHTML = '';
+                let i = 0;
+                setTimeout(() => {
+                    const interval = setInterval(() => {
+                        if (i >= original.length) { clearInterval(interval); return; }
+                        if (original.charAt(i) === '<') {
+                            let tag = '';
+                            while (original.charAt(i) !== '>') { tag += original.charAt(i); i++; }
+                            tag += '>'; firstStory.innerHTML += tag; i++;
+                        } else {
+                            firstStory.innerHTML += original.charAt(i); i++;
+                        }
+                    }, 20);
+                }, 3600);
+            }
+
+            let lastWhisper = 0;
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    const now = Date.now();
+                    if (now - lastWhisper < 1500) return;
+                    lastWhisper = now;
+                    const text = item.dataset.whisper;
+                    if (!text) return;
+                    const popup = document.createElement('div');
+                    popup.className = 'whisper-popup';
+                    popup.textContent = text;
+                    const rect = item.getBoundingClientRect();
+                    popup.style.left = Math.min(rect.left + rect.width/2 - 100, window.innerWidth - 220) + 'px';
+                    popup.style.top = (rect.top + 20) + 'px';
+                    document.body.appendChild(popup);
+                    setTimeout(() => popup.remove(), 3000);
+                    increaseDarkness(1);
+                });
+            });
+
+            document.querySelectorAll('.hero-card, .franchise-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const type = card.classList.contains('hero-card') ? '.hero-card' : '.franchise-card';
+                    document.querySelectorAll(type).forEach(c => { if (c !== card) c.classList.remove('expanded'); });
+                    card.classList.toggle('expanded');
+                    increaseDarkness(1);
+                });
+            });
+
+            const candles = document.querySelectorAll('.candle');
+            const timerEl = document.getElementById('timer');
+            const statusEl = document.getElementById('ritualStatus');
+            const startBtn = document.getElementById('startRitualBtn');
+            let ritualRunning = false, expectedOrder = 1, timeLeft = 30, timerInterval;
+
+            if(startBtn) {
+                startBtn.addEventListener('click', () => {
+                    if (ritualRunning) return;
+                    candles.forEach(c => c.classList.remove('clicked'));
+                    expectedOrder = 1; timeLeft = 30; if(timerEl) timerEl.textContent = 30;
+                    if(statusEl) { statusEl.textContent = 'СЖИГАЙ СВЕЧИ ПО ПОРЯДКУ'; statusEl.style.color = '#ffaa00'; }
+                    ritualRunning = true; startBtn.disabled = true; startBtn.textContent = 'ОБРЯД ИДЁТ...';
+
+                    timerInterval = setInterval(() => {
+                        timeLeft--; if(timerEl) timerEl.textContent = timeLeft;
+                        if (timeLeft <= 0) {
+                            clearInterval(timerInterval); ritualRunning = false;
+                            startBtn.disabled = false; startBtn.textContent = 'НАЧАТЬ ЗАНОВО';
+                            if(statusEl) { statusEl.textContent = 'ОБРЯД ПРОВАЛЕН'; statusEl.style.color = '#ff0000'; }
+                            increaseDarkness(3);
+                        }
+                    }, 1000);
+                });
+            }
+
+            candles.forEach(candle => {
+                candle.addEventListener('click', () => {
+                    if (!ritualRunning || candle.classList.contains('clicked')) return;
+                    const order = parseInt(candle.dataset.order);
+                    if (order === expectedOrder) {
+                        candle.classList.add('clicked');
+                        expectedOrder++;
+                        increaseDarkness(-0.5);
+                        if (expectedOrder > 5) {
+                            clearInterval(timerInterval); ritualRunning = false;
+                            if(startBtn) { startBtn.disabled = false; startBtn.textContent = 'НАЧАТЬ ЗАНОВО'; }
+                            if(statusEl) { statusEl.textContent = 'ВАЛЛАК ИЗГНАН'; statusEl.style.color = '#00ff00'; }
+                            increaseDarkness(-3);
+                        }
+                    } else {
+                        timeLeft = Math.max(1, timeLeft - 3); if(timerEl) timerEl.textContent = timeLeft;
+                        increaseDarkness(2);
+                    }
+                });
+            });
+
+            const answers = ['ДА', 'НЕТ', 'ОН РЯДОМ', 'НЕ ХОДИ ТУДА', 'ПОМОГИ МНЕ', 'ВАЛЛАК', 'БЕГИ', 'СКОРО', 'ТЫ СЛЕДУЮЩИЙ', 'В ПОДВАЛЕ'];
+            const ouijaBtn = document.getElementById('ouijaBtn');
+            const ouijaInput = document.getElementById('ouijaQuestion');
+            const ouijaAnswer = document.getElementById('ouijaAnswer');
+            const letters = document.querySelectorAll('#ouijaLetters span');
+
+            if(ouijaBtn) {
+                ouijaBtn.addEventListener('click', () => {
+                    if (!ouijaInput.value.trim()) return;
+                    ouijaAnswer.textContent = '...'; ouijaAnswer.style.color = '#ffaa00';
+                    increaseDarkness(2);
+                    setTimeout(() => {
+                        const q = ouijaInput.value.toLowerCase();
+                        let ans = answers[Math.floor(Math.random() * answers.length)];
+                        if (q.includes('валлак') || q.includes('демон')) ans = 'ВАЛЛАК';
+                        else if (q.includes('где')) ans = 'В ПОДВАЛЕ';
+                        else if (q.includes('кто')) ans = 'ОН РЯДОМ';
+                        
+                        ouijaAnswer.style.color = '#ff0000';
+                        ouijaAnswer.textContent = '';
+                        let idx = 0;
+                        const interval = setInterval(() => {
+                            if (idx >= ans.length) { clearInterval(interval); return; }
+                            ouijaAnswer.textContent += ans[idx];
+                            letters.forEach(l => l.classList.remove('active'));
+                            const match = Array.from(letters).find(l => l.textContent === ans[idx]);
+                            if (match) { match.classList.add('active'); setTimeout(() => match.classList.remove('active'), 300); }
+                            idx++;
+                        }, 150);
+                    }, 1000);
+                });
+            }
+
+            let buffer = '';
+            document.addEventListener('keydown', (e) => {
+                if (document.activeElement.tagName === 'INPUT') return;
+                const key = e.key.toUpperCase();
+                if (key.length === 1 && key >= 'A' && key <= 'Z') {
+                    buffer += key;
+                    if (buffer.length > 5) buffer = buffer.slice(-5);
+                    if (buffer === 'VALAK') {
+                        const flash = document.createElement('div');
+                        flash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle,rgba(255,0,0,0.8) 0%,rgba(0,0,0,0.95) 70%);z-index:10002;pointer-events:none;';
+                        document.body.appendChild(flash);
+                        setTimeout(() => flash.remove(), 1500);
+                        increaseDarkness(20);
+                        buffer = '';
+                    }
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('button') || e.target.closest('.hero-card') || e.target.closest('.franchise-card')) return;
+                const stain = document.createElement('div');
+                const size = 20 + Math.random() * 40;
+                stain.style.cssText = `position:fixed;left:${e.clientX - size/2}px;top:${e.clientY - size/2}px;width:${size}px;height:${size}px;background:radial-gradient(circle,rgba(139,0,0,0.8) 0%,transparent 70%);border-radius:50%;pointer-events:none;z-index:9990;opacity:0;transition:opacity 2s;`;
+                document.body.appendChild(stain);
+                setTimeout(() => stain.style.opacity = '1', 10);
+                setTimeout(() => stain.style.opacity = '0', 2000);
+                setTimeout(() => stain.remove(), 4000);
+            });
+        });
+    </script>
+</body>
+</html>
